@@ -54,10 +54,16 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       await browser.close();
 
-      res.send(results);
+      res.send({
+        count: results.length,
+        results,
+      });
     } catch (error) {
       console.log(error);
-      return res.send([]);
+      return res.send({
+        count: 0,
+        results: [],
+      });
     }
   })();
 });
