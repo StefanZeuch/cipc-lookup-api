@@ -2,29 +2,17 @@ var express = require('express');
 var router = express.Router();
 const puppeteer = require('puppeteer');
 const { JSDOM } = require("jsdom");
-const chromium = require('chromium');
 
 router.get('/enterpriseName/:name', async function(req, res, next) {
   const name = req.params.name || '';
-  console.log({
-    name
-  });
   (async () => {
     try {
       const browser = await puppeteer.launch({
         headless: true,
-        // defaultViewport: null,
         args: [
           "--no-sandbox",
-          '--disable-setuid-sandbox'
         ],
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath,
-        // headless: true,
-        ignoreHTTPSErrors: true
       });
-      console.log('launched...');
       const page = await browser.newPage();
       await page.goto('http://eservices.cipc.co.za/Search.aspx');
       
@@ -34,7 +22,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.waitForSelector("select[name='ctl00$cntMain$drpSearchOptions']");
       await page.select("select[name='ctl00$cntMain$drpSearchOptions']", "EntName");
 
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(500);
 
       await page.focus("input[name='ctl00$cntMain$txtSearchCIPC']")
       await page.keyboard.type(name);
