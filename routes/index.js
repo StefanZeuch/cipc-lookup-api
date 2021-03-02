@@ -203,6 +203,80 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
 
       companyDetails['directors'] = directors;
       
+      const annualReturnDetailsTable = dom.window.document.querySelector("#ctl00_cntMain_TabContainer1_TabPanel3 tbody table tbody");
+
+      const annualReturnDetailsRows = annualReturnDetailsTable.rows;
+
+      const filedAnnualReturns = [];
+
+      for (let index = 0; index < annualReturnDetailsRows.length; index++) {
+        if (index > 0) {
+          const element = annualReturnDetailsRows[index];
+          const cells = element.cells;
+          const arYear = cells[0].innerHTML;
+          const customerCode = cells[1].innerHTML;
+          const amountPaid = cells[2].innerHTML;
+          const trackingNumber = cells[3].innerHTML;
+          const dateFiled = cells[4].innerHTML;
+          filedAnnualReturns.push({
+            arYear,
+            customerCode,
+            amountPaid,
+            trackingNumber,
+            dateFiled
+          })
+        }
+      }
+
+      companyDetails['filedAnnualReturns'] = filedAnnualReturns;
+
+      const outstandingAnnualReturnsTable = dom.window.document.querySelector("#ctl00_cntMain_TabContainer1_TabPanel3 table:nth-of-type(2) table tbody");
+
+      const outstandingAnnualReturnsRows = outstandingAnnualReturnsTable.rows;
+
+      const outstandingAnnualReturns = [];
+
+      for (let index = 0; index < outstandingAnnualReturnsRows.length; index++) {
+        if (index > 0) {
+          const element = outstandingAnnualReturnsRows[index];
+          const cells = element.cells;
+          const arYear = cells[0].innerHTML;
+          // TODO: double check with a company with outstanding annual returns
+          if (arYear !== 'This enterprise does not have any outstanding annual returns at the moment') {
+            const arMonth = cells[1].innerHTML;
+            const arNonComplianceDate = cells[2].innerHTML;
+            outstandingAnnualReturns.push({
+              arYear,
+              arMonth,
+              arNonComplianceDate
+            });
+          }
+        }
+      }
+
+      companyDetails['outstandingAnnualReturns'] = outstandingAnnualReturns;
+
+      const enterpriseHistoryTable = dom.window.document.querySelector("#ctl00_cntMain_TabContainer1_TabPanel4 tbody table tbody");
+
+      const enterpriseHistoryRows = enterpriseHistoryTable.rows;
+
+      const enterpriseHistory = [];
+
+      for (let index = 0; index < enterpriseHistoryRows.length; index++) {
+        if (index > 0) {
+          const element = enterpriseHistoryRows[index];
+          const cells = element.cells;
+          const date = cells[0].innerHTML;
+          const details = cells[1].innerHTML;
+          enterpriseHistory.push({
+            date,
+            details
+          });
+        }
+      }
+
+      companyDetails['enterpriseHistory'] = enterpriseHistory;
+
       res.send({
         ...companyDetails,
       });
