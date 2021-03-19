@@ -213,18 +213,20 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
         if (index > 0) {
           const element = annualReturnDetailsRows[index];
           const cells = element.cells;
-          const arYear = cells[0].innerHTML;
-          const customerCode = cells[1].innerHTML;
-          const amountPaid = cells[2].innerHTML;
-          const trackingNumber = cells[3].innerHTML;
-          const dateFiled = cells[4].innerHTML;
-          filedAnnualReturns.push({
-            arYear,
-            customerCode,
-            amountPaid,
-            trackingNumber,
-            dateFiled
-          })
+          if (cells && cells.length > 1) {
+            const arYear = cells[0].innerHTML;
+            const customerCode = cells[1].innerHTML;
+            const amountPaid = cells[2].innerHTML;
+            const trackingNumber = cells[3].innerHTML;
+            const dateFiled = cells[4].innerHTML;
+            filedAnnualReturns.push({
+              arYear,
+              customerCode,
+              amountPaid,
+              trackingNumber,
+              dateFiled
+            })
+          }
         }
       }
 
