@@ -3,7 +3,7 @@ var router = express.Router();
 const puppeteer = require('puppeteer');
 const { JSDOM } = require("jsdom");
 
-const URL = 'http://eservices.cipc.co.za/Search.aspx'
+const URL = 'https://bizportal.gov.za/login.aspx'
 
 router.get('/enterpriseName/:name', async function(req, res, next) {
   req.setTimeout(300000);
