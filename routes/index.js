@@ -3,7 +3,7 @@ var router = express.Router();
 const puppeteer = require('puppeteer');
 const { JSDOM } = require("jsdom");
 
-const URL = 'https://bizportal.gov.za/login.aspx'
+const URL = 'https://bizportal.gov.za/login.aspx';
 
 router.get('/enterpriseName/:name', async function(req, res, next) {
   req.setTimeout(300000);
@@ -11,15 +11,43 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
   (async () => {
     try {
       const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          "--no-sandbox",
-        ],
+        headless: false,
+        // args: [
+        //   "--no-sandbox",
+        // ],
       });
       console.log('browser launched...')
       const page = await browser.newPage();
+      await page.setViewport({ width: 1920, height: 1080});
       await page.goto(URL);
-      console.log('page opened...')
+      console.log('page opened...');
+
+      await page.waitForSelector("input[name='ctl00$cntMain$txtIDNo']");
+      console.log('found login...');
+
+      await page.waitForSelector("#cntMain_chkId_ToggleButton");
+
+      await page.waitForTimeout(2500);
+
+      await page.click("#cntMain_chkId_ToggleButton");
+      console.log('toggled...');
+
+      await page.waitForTimeout(1000);
+
+      await page.focus("input[name='ctl00$cntMain$txtCustCode']")
+      await page.keyboard.type(process.env.USERNAME);
+
+      await page.focus("input[name='ctl00$cntMain$txtPassword']")
+      await page.keyboard.type(process.env.PASSWORD);
+      
+      await page.click("input[name='ctl00$cntMain$btnLogin']");
+      console.log('clicked login...');
+
+      await page.waitForTimeout(1000);
+
+      await page.goto('https://bizportal.gov.za/bizprofile.aspx');
+
+      await page.waitForTimeout(1000);
 
       await page.waitForSelector("select[name='ctl00$cntMain$drpSearchOptions']");
       console.log('found search options component...')
@@ -34,19 +62,19 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       console.log('entered "'+name+'"...')
 
-      await page.click("#ctl00_cntMain_lnkSearchIcon");
+      await page.click("input[name='ctl00$cntMain$btnSearch']");
 
       console.log('clicked search...')
 
       console.log('waiting for search results box...');
 
-      await page.waitForSelector("#ctl00_cntMain_pnlNameSearch", {
+      await page.waitForSelector("#cntMain_pnlNameSearch", {
         timeout: 120000
       });
 
       console.log('found search results box...');
 
-      const html = await page.evaluate(el => el.innerHTML, await page.$('#ctl00_cntMain_pnlNameSearch'));
+      const html = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlNameSearch'));
 
       console.log('got lookup results...');
 
@@ -55,7 +83,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       console.log('closed browser...');
 
       const dom = new JSDOM(html);
-      const table = dom.window.document.querySelector("#ctl00_cntMain_gdvNames tbody");
+      const table = dom.window.document.querySelector("#cntMain_gdvNames tbody");
 
       const rows = table.rows;
 
