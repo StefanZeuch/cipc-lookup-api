@@ -184,7 +184,7 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
 
       console.log('clicked search...');
 
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2500);
 
       await page.waitForSelector("#cntMain_lblError", {
         timeout: 120000
@@ -209,8 +209,6 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       const annualReturnDetailsTable = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(3) .tab-content'));
       const outstandingAnnualReturnsTable = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(3) .tab-content div:nth-of-type(2)'));
       const enterpriseHistoryTab = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(4) .tab-content'));
-      // const beeTab = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(5) .tab-content'));
-      // const otherDetailsTab = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(6) .tab-content'));
 
       console.log('got lookup results...');
 
