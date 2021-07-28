@@ -43,17 +43,20 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       // Validate logged in
-      await page.waitForSelector("#cntMain_Updatepanel1");
+      await page.waitForSelector("#cntMain_lblSurname");
+
       console.log('logged in...');
 
       await page.waitForTimeout(1000);
 
       await page.goto('https://bizportal.gov.za/bizprofile.aspx');
 
-      await page.waitForTimeout(1000);
+      console.log('navigated to bizprofile...');
 
-      await page.waitForSelector("select[name='ctl00$cntMain$drpSearchOptions']");
+      await page.waitForSelector("#cntMain_pnlSearchBox");
+
       console.log('found search options component...')
+
       await page.select("select[name='ctl00$cntMain$drpSearchOptions']", "EntName");
 
       console.log('selected query type...')
@@ -65,9 +68,13 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       console.log('entered "'+name+'"...')
 
+      await page.waitForTimeout(1000);
+
       await page.click("input[name='ctl00$cntMain$btnSearch']");
 
       console.log('clicked search...')
+
+      await page.waitForTimeout(1000);
 
       console.log('waiting for search results box...');
 
@@ -158,17 +165,20 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       // Validate logged in
-      await page.waitForSelector("#cntMain_Updatepanel1");
+      await page.waitForSelector("#cntMain_lblSurname");
+
       console.log('logged in...');
 
       await page.waitForTimeout(1000);
 
       await page.goto('https://bizportal.gov.za/bizprofile.aspx');
 
-      await page.waitForTimeout(1000);
+      console.log('navigated to bizprofile...');
 
-      await page.waitForSelector("select[name='ctl00$cntMain$drpSearchOptions']");
+      await page.waitForSelector("#cntMain_pnlSearchBox");
+
       console.log('found search options component...')
+
       await page.select("select[name='ctl00$cntMain$drpSearchOptions']", "EntNo");
 
       console.log('selected query type...')
@@ -179,6 +189,8 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       await page.keyboard.type(joined);
 
       console.log('entered "'+joined+'"...')
+
+      await page.waitForTimeout(1000);
 
       await page.click("input[name='ctl00$cntMain$btnSearch']");
 
