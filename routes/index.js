@@ -11,7 +11,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
   (async () => {
     try {
       const browser = await puppeteer.launch({
-        headless: true
+        headless: false
       });
       console.log('browser launched...')
       const page = await browser.newPage();
@@ -124,6 +124,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
         results,
       });
     } catch (error) {
+      await page.screenshot({path: 'error-screenshot.png'});
       console.log(error);
       return res.send({
         count: 0,
@@ -141,7 +142,7 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
   (async () => {
     try {
       const browser = await puppeteer.launch({
-        headless: true
+        headless: false
       });
       console.log('browser launched...')
       const page = await browser.newPage();
@@ -369,6 +370,7 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
         ...companyDetails,
       });
     } catch (error) {
+      await page.screenshot({path: 'error-screenshot.png'});
       console.log(error);
       return res.send({
         message: 'Failed to retrieve company details',
