@@ -19,10 +19,14 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.goto(URL);
       console.log('page opened...');
 
-      await page.waitForSelector("input[name='ctl00$cntMain$txtIDNo']");
+      await page.waitForSelector("input[name='ctl00$cntMain$txtIDNo']", {
+        timeout: 120000
+      });
       console.log('found login...');
 
-      await page.waitForSelector("#cntMain_chkId_ToggleButton");
+      await page.waitForSelector("#cntMain_chkId_ToggleButton", {
+        timeout: 120000
+      });
 
       await page.waitForTimeout(2500);
 
@@ -43,7 +47,9 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       // Validate logged in
-      await page.waitForSelector("#cntMain_lblSurname");
+      await page.waitForSelector("#cntMain_lblSurname", {
+        timeout: 120000
+      });
 
       console.log('logged in...');
 
@@ -53,7 +59,9 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       console.log('navigated to bizprofile...');
 
-      await page.waitForSelector("#cntMain_pnlSearchBox");
+      await page.waitForSelector("#cntMain_pnlSearchBox", {
+        timeout: 120000
+      });
 
       console.log('found search options component...')
 
@@ -141,10 +149,14 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       await page.goto(URL);
       console.log('page opened...');
 
-      await page.waitForSelector("input[name='ctl00$cntMain$txtIDNo']");
+      await page.waitForSelector("input[name='ctl00$cntMain$txtIDNo']", {
+        timeout: 120000
+      });
       console.log('found login...');
 
-      await page.waitForSelector("#cntMain_chkId_ToggleButton");
+      await page.waitForSelector("#cntMain_chkId_ToggleButton", {
+        timeout: 120000
+      });
 
       await page.waitForTimeout(2500);
 
@@ -165,7 +177,9 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       // Validate logged in
-      await page.waitForSelector("#cntMain_lblSurname");
+      await page.waitForSelector("#cntMain_lblSurname", {
+        timeout: 120000
+      });
 
       console.log('logged in...');
 
@@ -175,7 +189,9 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
 
       console.log('navigated to bizprofile...');
 
-      await page.waitForSelector("#cntMain_pnlSearchBox");
+      await page.waitForSelector("#cntMain_pnlSearchBox", {
+        timeout: 120000
+      });
 
       console.log('found search options component...')
 
