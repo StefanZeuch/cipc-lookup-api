@@ -11,7 +11,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
   (async () => {
     try {
       const browser = await puppeteer.launch({
-        headless: false
+        headless: true
       });
       console.log('browser launched...')
       const page = await browser.newPage();
@@ -142,7 +142,7 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
   (async () => {
     try {
       const browser = await puppeteer.launch({
-        headless: false
+        headless: true
       });
       console.log('browser launched...')
       const page = await browser.newPage();
