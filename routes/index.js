@@ -36,10 +36,10 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       await page.focus("input[name='ctl00$cntMain$txtCustCode']")
-      await page.keyboard.type(process.env.USERNAME);
+      await page.keyboard.type(process.env.LOGIN_USERNAME);
 
       await page.focus("input[name='ctl00$cntMain$txtPassword']")
-      await page.keyboard.type(process.env.PASSWORD);
+      await page.keyboard.type(process.env.LOGIN_PASSWORD);
       
       await page.click("input[name='ctl00$cntMain$btnLogin']");
       console.log('clicked login...');
@@ -167,10 +167,10 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       await page.focus("input[name='ctl00$cntMain$txtCustCode']")
-      await page.keyboard.type(process.env.USERNAME);
+      await page.keyboard.type(process.env.LOGIN_USERNAME);
 
       await page.focus("input[name='ctl00$cntMain$txtPassword']")
-      await page.keyboard.type(process.env.PASSWORD);
+      await page.keyboard.type(process.env.LOGIN_PASSWORD);
       
       await page.click("input[name='ctl00$cntMain$btnLogin']");
       console.log('clicked login...');
