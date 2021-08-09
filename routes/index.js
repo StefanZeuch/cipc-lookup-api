@@ -7,6 +7,12 @@ const URL = 'https://bizportal.gov.za/login.aspx';
 
 router.get('/enterpriseName/:name', async function(req, res, next) {
   req.setTimeout(300000);
+  const LOGIN_USERNAME = req.query.loginUsername || process.env.LOGIN_USERNAME;
+  const LOGIN_PASSWORD = req.query.loginPassword || process.env.LOGIN_PASSWORD;
+  console.log({
+    LOGIN_USERNAME,
+    LOGIN_PASSWORD
+  });
   const name = req.params.name || '';
   (async () => {
     try {
@@ -36,10 +42,10 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       await page.focus("input[name='ctl00$cntMain$txtCustCode']")
-      await page.keyboard.type(process.env.LOGIN_USERNAME);
+      await page.keyboard.type(LOGIN_USERNAME);
 
       await page.focus("input[name='ctl00$cntMain$txtPassword']")
-      await page.keyboard.type(process.env.LOGIN_PASSWORD);
+      await page.keyboard.type(LOGIN_PASSWORD);
       
       await page.click("input[name='ctl00$cntMain$btnLogin']");
       console.log('clicked login...');
@@ -124,7 +130,6 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
         results,
       });
     } catch (error) {
-      await page.screenshot({path: 'error-screenshot.png'});
       console.log(error);
       return res.send({
         count: 0,
@@ -136,6 +141,12 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
 router.get('/enterpriseNo/:number*', async function(req, res, next) {
   req.setTimeout(300000);
+  const LOGIN_USERNAME = req.query.loginUsername || process.env.LOGIN_USERNAME;
+  const LOGIN_PASSWORD = req.query.loginPassword || process.env.LOGIN_PASSWORD;
+  console.log({
+    LOGIN_USERNAME,
+    LOGIN_PASSWORD
+  });
   const number = req.params['number'] || '';
   const trail = req.params[0] || '';
   const joined = number + trail;
@@ -167,10 +178,10 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       await page.focus("input[name='ctl00$cntMain$txtCustCode']")
-      await page.keyboard.type(process.env.LOGIN_USERNAME);
+      await page.keyboard.type(LOGIN_USERNAME);
 
       await page.focus("input[name='ctl00$cntMain$txtPassword']")
-      await page.keyboard.type(process.env.LOGIN_PASSWORD);
+      await page.keyboard.type(LOGIN_PASSWORD);
       
       await page.click("input[name='ctl00$cntMain$btnLogin']");
       console.log('clicked login...');
@@ -370,7 +381,6 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
         ...companyDetails,
       });
     } catch (error) {
-      await page.screenshot({path: 'error-screenshot.png'});
       console.log(error);
       return res.send({
         message: 'Failed to retrieve company details',
