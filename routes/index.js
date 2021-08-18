@@ -249,6 +249,8 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       const annualReturnDetailsTable = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(3) .tab-content'));
       const outstandingAnnualReturnsTable = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(3) .tab-content div:nth-of-type(2)'));
       const enterpriseHistoryTab = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(4) .tab-content'));
+      const beeDetailsTab = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(5) .tab-content'));
+      const otherDetailsTab = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResults > div:nth-child(6) .tab-content'));
 
       console.log('got lookup results...');
 
@@ -376,6 +378,38 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       }
 
       companyDetails['enterpriseHistory'] = enterpriseHistory;
+
+      try {
+        const beeDetailsDom = new JSDOM(beeDetailsTab);
+        const beeDetailsParagraph = beeDetailsDom.window.document.querySelector("#cntMain_pnlNoBEE p");
+
+        if (beeDetailsParagraph && beeDetailsParagraph.innerHTML) {
+          companyDetails['BEEDetails'] = {
+            response: beeDetailsParagraph.innerHTML
+          };
+        }
+      } catch (error) {
+        console.log({
+          error
+        });
+      }
+
+      const otherDetailsTabDom = new JSDOM(otherDetailsTab);
+      const otherDetailsTabSections = otherDetailsTabDom.window.document.querySelectorAll("section");
+
+      companyDetails['otherDetails'] = []
+
+      if (otherDetailsTabSections && otherDetailsTabSections.length > 0) {
+        for (let index = 0; index < otherDetailsTabSections.length; index++) {
+          const elements = otherDetailsTabSections[index].querySelectorAll('div');
+          const key = elements[0].innerHTML;
+          const value = elements[1].querySelector('span').innerHTML;
+          companyDetails['otherDetails'].push({
+            key,
+            value
+          });
+        }
+      }
 
       res.send({
         ...companyDetails,
