@@ -3,7 +3,7 @@ var router = express.Router();
 const puppeteer = require('puppeteer');
 const { JSDOM } = require("jsdom");
 
-const URL = 'https://bizportal.gov.za/login.aspx';
+const URL = 'https://bizportal.gov.za/user_login.aspx';
 
 router.get('/enterpriseName/:name', async function(req, res, next) {
   req.setTimeout(300000);
@@ -17,7 +17,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
   (async () => {
     try {
       const browser = await puppeteer.launch({
-        headless: true
+        headless: false
       });
       console.log('browser launched...')
       const page = await browser.newPage();
@@ -25,27 +25,31 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.goto(URL);
       console.log('page opened...');
 
-      await page.waitForSelector("input[name='ctl00$cntMain$txtIDNo']", {
+      await page.waitForSelector("#cntMain_txtIdNo", {
         timeout: 120000
       });
       console.log('found login...');
 
-      await page.waitForSelector("#cntMain_chkId_ToggleButton", {
-        timeout: 120000
-      });
+      // TODO: will need to toggle this if username and password are used
+      // await page.waitForSelector("#cntMain_chkId_ToggleButton", {
+      //   timeout: 120000
+      // });
 
-      await page.waitForTimeout(2500);
+      // await page.waitForTimeout(2500);
 
-      await page.click("#cntMain_chkId_ToggleButton");
-      console.log('toggled...');
+      // await page.click("#cntMain_chkId_ToggleButton");
+      // console.log('toggled...');
 
-      await page.waitForTimeout(1000);
+      // await page.waitForTimeout(1000);
 
-      await page.focus("input[name='ctl00$cntMain$txtCustCode']")
+      // input[name='ctl00$cntMain$txtCustCode']
+      await page.focus("input[name='ctl00$cntMain$txtIdNo']")
       await page.keyboard.type(LOGIN_USERNAME);
 
       await page.focus("input[name='ctl00$cntMain$txtPassword']")
       await page.keyboard.type(LOGIN_PASSWORD);
+
+      await page.waitForTimeout(1000);
       
       await page.click("input[name='ctl00$cntMain$btnLogin']");
       console.log('clicked login...');
@@ -53,7 +57,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.waitForTimeout(1000);
 
       // Validate logged in
-      await page.waitForSelector("#cntMain_lblSurname", {
+      await page.waitForSelector("#cntSidebar_lblSurname", {
         timeout: 120000
       });
 
@@ -61,30 +65,30 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       await page.waitForTimeout(1000);
 
-      await page.goto('https://bizportal.gov.za/bizprofile.aspx');
+      // await page.goto('https://bizportal.gov.za/bizprofile.aspx');
 
-      console.log('navigated to bizprofile...');
+      // console.log('navigated to bizprofile...');
 
-      await page.waitForSelector("#cntMain_pnlSearchBox", {
+      await page.waitForSelector('input[name="ctl00$txtSearchHeader"]', {
         timeout: 120000
       });
 
-      console.log('found search options component...')
+      console.log('found search options component...');
 
-      await page.select("select[name='ctl00$cntMain$drpSearchOptions']", "EntName");
+      await page.select("select[name='ctl00$drpSearchOptionsHeader']", "EntName");
 
       console.log('selected query type...')
 
       await page.waitForTimeout(500);
 
-      await page.focus("input[name='ctl00$cntMain$txtSearchCIPC']")
+      await page.focus('input[name="ctl00$txtSearchHeader"]')
       await page.keyboard.type(name);
 
       console.log('entered "'+name+'"...')
 
       await page.waitForTimeout(1000);
 
-      await page.click("input[name='ctl00$cntMain$btnSearch']");
+      await page.click("#btnSearchHeader");
 
       console.log('clicked search...')
 
@@ -92,13 +96,13 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       console.log('waiting for search results box...');
 
-      await page.waitForSelector("#cntMain_pnlNameSearch", {
+      await page.waitForSelector("#cntMain_gdvEnterprisesName", {
         timeout: 120000
       });
 
       console.log('found search results box...');
 
-      const html = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlNameSearch'));
+      const html = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResultsName'));
 
       console.log('got lookup results...');
 
@@ -107,21 +111,26 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       console.log('closed browser...');
 
       const dom = new JSDOM(html);
-      const table = dom.window.document.querySelector("#cntMain_gdvNames tbody");
+      const table = dom.window.document.querySelector("#cntMain_gdvEnterprisesName > tbody");
 
       const rows = table.rows;
 
       const results = [];
 
+      // TODO: get pagination?
+
       for (let index = 0; index < rows.length; index++) {
         if (index > 0) {
           const row = rows[index];
-          const cells = Array.prototype.slice.call(row.cells) ;
-          results.push({
+          const cells = Array.prototype.slice.call(row.cells);
+          const item = cells[2];
+          if (item) {
+            results.push({
               name: cells[0].innerHTML,
               number: cells[1].innerHTML,
               status: cells[2].innerHTML,
-          });
+            });
+          }
         }
       }
 
