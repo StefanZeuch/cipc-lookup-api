@@ -16,6 +16,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
   const name = req.params.name || '';
   (async () => {
     try {
+
       const browser = await puppeteer.launch({
         headless: false
       });
@@ -24,50 +25,33 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       await page.setViewport({ width: 1920, height: 1080});
       await page.goto(URL);
       console.log('page opened...');
-
+    
       await page.waitForSelector("#cntMain_txtIdNo", {
         timeout: 120000
       });
       console.log('found login...');
-
-      // TODO: will need to toggle this if username and password are used
-      // await page.waitForSelector("#cntMain_chkId_ToggleButton", {
-      //   timeout: 120000
-      // });
-
-      // await page.waitForTimeout(2500);
-
-      // await page.click("#cntMain_chkId_ToggleButton");
-      // console.log('toggled...');
-
-      // await page.waitForTimeout(1000);
-
-      // input[name='ctl00$cntMain$txtCustCode']
+    
       await page.focus("input[name='ctl00$cntMain$txtIdNo']")
       await page.keyboard.type(LOGIN_USERNAME);
-
+    
       await page.focus("input[name='ctl00$cntMain$txtPassword']")
       await page.keyboard.type(LOGIN_PASSWORD);
-
+    
       await page.waitForTimeout(1000);
       
       await page.click("input[name='ctl00$cntMain$btnLogin']");
       console.log('clicked login...');
-
+    
       await page.waitForTimeout(1000);
-
+    
       // Validate logged in
       await page.waitForSelector("#cntSidebar_lblSurname", {
         timeout: 120000
       });
-
+    
       console.log('logged in...');
-
+    
       await page.waitForTimeout(1000);
-
-      // await page.goto('https://bizportal.gov.za/bizprofile.aspx');
-
-      // console.log('navigated to bizprofile...');
 
       await page.waitForSelector('input[name="ctl00$txtSearchHeader"]', {
         timeout: 120000
@@ -102,37 +86,53 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       console.log('found search results box...');
 
-      const html = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResultsName'));
+      // Calculate how many pages of results there are
+      const pager = await page.evaluate(el => el.innerHTML, await page.$('.mGridPager'));
 
-      console.log('got lookup results...');
+      const pagerDom = new JSDOM(pager);
+
+      const pages = pagerDom.window.document.querySelector("table tr").cells.length;
+
+      console.log({
+        pages
+      });
+
+      const results = [];
+
+      for (let index = 1; index < pages + 1; index++) {
+        console.log('Page:', index);
+        
+        const html = await page.evaluate(el => el.innerHTML, await page.$('#cntMain_pnlResultsName'));
+        const dom = new JSDOM(html);
+        const table = dom.window.document.querySelector("#cntMain_gdvEnterprisesName > tbody");
+        const rows = table.rows;
+  
+        for (let index = 0; index < rows.length; index++) {
+          if (index > 0) {
+            const row = rows[index];
+            const cells = Array.prototype.slice.call(row.cells);
+            const item = cells[2];
+            if (item) {
+              results.push({
+                name: cells[0].innerHTML,
+                number: cells[1].innerHTML,
+                status: cells[2].innerHTML,
+              });
+            }
+          }
+        }
+
+        if (index !== pages) {
+          await page.click(`.mGridPager table td:nth-of-type(${index + 1})`);
+          await page.waitForTimeout(1000);
+        }
+      }
+
+      console.log('got paged lookup results...');
 
       await browser.close();
 
       console.log('closed browser...');
-
-      const dom = new JSDOM(html);
-      const table = dom.window.document.querySelector("#cntMain_gdvEnterprisesName > tbody");
-
-      const rows = table.rows;
-
-      const results = [];
-
-      // TODO: get pagination?
-
-      for (let index = 0; index < rows.length; index++) {
-        if (index > 0) {
-          const row = rows[index];
-          const cells = Array.prototype.slice.call(row.cells);
-          const item = cells[2];
-          if (item) {
-            results.push({
-              name: cells[0].innerHTML,
-              number: cells[1].innerHTML,
-              status: cells[2].innerHTML,
-            });
-          }
-        }
-      }
 
       res.send({
         count: results.length,
