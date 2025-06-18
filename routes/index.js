@@ -21,6 +21,8 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
       });
       console.log('browser launched...')
       const page = await browser.newPage();
+      page.setDefaultTimeout(120000);
+      page.setDefaultNavigationTimeout(120000);
       await page.setViewport({ width: 1920, height: 1080});
       await page.goto(URL);
       console.log('page opened...');
@@ -61,7 +63,9 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       await page.waitForTimeout(1000);
 
-      await page.goto('https://bizportal.gov.za/bizprofile.aspx');
+      await page.goto('https://bizportal.gov.za/bizprofile.aspx', {
+        timeout: 120000
+      });
 
       console.log('navigated to bizprofile...');
 
@@ -157,6 +161,8 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
       });
       console.log('browser launched...')
       const page = await browser.newPage();
+      page.setDefaultTimeout(120000);
+      page.setDefaultNavigationTimeout(120000);
       await page.setViewport({ width: 1920, height: 1080});
       await page.goto(URL);
       console.log('page opened...');
@@ -197,7 +203,9 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
 
       await page.waitForTimeout(1000);
 
-      await page.goto('https://bizportal.gov.za/bizprofile.aspx');
+      await page.goto('https://bizportal.gov.za/bizprofile.aspx', {
+        timeout: 120000
+      });
 
       console.log('navigated to bizprofile...');
 
