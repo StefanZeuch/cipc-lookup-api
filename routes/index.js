@@ -3,7 +3,7 @@ var router = express.Router();
 const puppeteer = require('puppeteer');
 const { JSDOM } = require("jsdom");
 
-const URL = 'https://bizportal.gov.za/login.aspx';
+const URL = 'https://www.bizportal.gov.za/login.aspx';
 
 router.get('/enterpriseName/:name', async function(req, res, next) {
   req.setTimeout(300000);
@@ -63,7 +63,7 @@ router.get('/enterpriseName/:name', async function(req, res, next) {
 
       await page.waitForTimeout(1000);
 
-      await page.goto('https://bizportal.gov.za/bizprofile.aspx', {
+      await page.goto('https://www.bizportal.gov.za/bizprofile.aspx', {
         timeout: 120000
       });
 
@@ -203,7 +203,7 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
 
       await page.waitForTimeout(1000);
 
-      await page.goto('https://bizportal.gov.za/bizprofile.aspx', {
+      await page.goto('https://www.bizportal.gov.za/bizprofile.aspx', {
         timeout: 120000
       });
 
