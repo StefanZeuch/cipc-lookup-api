@@ -234,14 +234,6 @@ router.get('/enterpriseNo/:number*', async function(req, res, next) {
 
       await page.waitForTimeout(2500);
 
-      await page.waitForSelector("#cntMain_lblError", {
-        timeout: 120000
-      });
-
-      await page.waitForTimeout(1000);
-
-      await page.click("input[name='ctl00$cntMain$btnSearch']");
-
       console.log('waiting for search results box...');
 
       await page.waitForTimeout(1000);
